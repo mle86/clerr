@@ -3,9 +3,9 @@ CFLAGS=-O3 -I. -Wall
 BIN=clerr
 DEST=/usr/local/bin/clerr
 CHOWN=root:root
-SRC=clerr.c
+SRC=src/clerr.c
 
-MAN=clerr.1
+MAN=man/clerr.1
 MANDEST=/usr/local/share/man/man1/
 
 
