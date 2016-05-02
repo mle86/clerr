@@ -29,12 +29,19 @@
 
 
 int fd_close;
-int ret = 0;
+pid_t pid_child = 0;
+
+volatile int exit_status = 0;
+volatile int exit_signal = 0;
 
 static bool colorize_fd (int fd_read, short color, FILE* output);
 static void run_command (int fd_write_errors, char** arguments);
 static bool create_pipe (int *in, int *out);
 static bool parse_color (char* arg, short *color);
+static void sigchld     (int signo);
+static void sigfwd      (int signo);
+static void install_signal_handlers (void);
+static void default_signal_handlers (void);
 static void Version (void);
 static void Help    (void);
 
@@ -73,9 +80,10 @@ int main (int argc, char** argv) {
 
 	// Install signal handler
 	fd_close = fd_write_errors;
-	signal(SIGCHLD, sig);
+	install_signal_handlers();
 
-	switch (fork()) {
+	pid_child = fork();
+	switch (pid_child) {
 		case -1:;
 			// fork() failed
 			perror(PROGNAME": fork()");
@@ -94,12 +102,14 @@ int main (int argc, char** argv) {
 
 			if (! ret)
 				return 4;
-			break;
+			else if (exit_signal) {
+				// kill self with same signal.
+				default_signal_handlers();  // restore default signal handlers, or SIGINT won't work
+				raise(exit_signal);
+			} else
+				// terminate with same status (might be zero)
+				return exit_status;
 	}
-
-	// EOF
-	// (or some error within child process which caused no read error)
-	return ret;
 }
 
 
@@ -164,7 +174,7 @@ void run_command (int fd_write_errors, char** arguments) {
 	 * child's stderr → fd_write_errors ⇒ fd_read_errors  */
 
 	// restore default signal handlers:
-	signal(SIGCHLD, SIG_DFL);
+	default_signal_handlers();
 
 	// execute command:
 	execvp(arguments[0], arguments);
@@ -174,17 +184,75 @@ void run_command (int fd_write_errors, char** arguments) {
 	perror(PROGNAME": execvp()");
 }
 
-void sig (int s) {
+void install_signal_handlers (void) {
+	struct sigaction
+		sa_sigchld = { .sa_handler = sigchld },
+		sa_sigfwd  = { .sa_handler = sigfwd };
+
+	sigemptyset(&sa_sigchld.sa_mask);
+	sigemptyset(&sa_sigfwd.sa_mask);
+
+	sigaction(SIGCHLD, &sa_sigchld, NULL);
+
+	sigaction(SIGINT,  &sa_sigfwd,  NULL);
+	sigaction(SIGTERM, &sa_sigfwd,  NULL);
+	sigaction(SIGQUIT, &sa_sigfwd,  NULL);
+	sigaction(SIGALRM, &sa_sigfwd,  NULL);
+}
+
+void default_signal_handlers (void) {
+	struct sigaction sa_dfl = { .sa_handler = SIG_DFL };
+	sigemptyset(&sa_dfl.sa_mask);
+
+	sigaction(SIGCHLD, &sa_dfl, NULL);
+	sigaction(SIGINT,  &sa_dfl, NULL);
+	sigaction(SIGTERM, &sa_dfl, NULL);
+	sigaction(SIGQUIT, &sa_dfl, NULL);
+	sigaction(SIGALRM, &sa_dfl, NULL);
+}
+
+void sigchld (int signo) {
+	/* We got a SIGCHLD signal.
+	 * That means our stderr read() loop has now been interrupted with EINTR.
+	 * This signal handler sets appropriate flags about how to continue.  */
+
+	const int wait_options =
+		WNOHANG;  // non-blocking, there already has been a SIGCHLD, so this call should always succeed
+
 	int status;
+	if (waitpid(pid_child, &status, wait_options) > 0) {
+		if (WIFSTOPPED(status)) {
+			/* The child process stopped. Wait for it to continue.
+			 * We don't have to do anything special -- the current read() call was interrupted by this SIGCHLD,
+			 * and the next read() (as soon as this signal handler returns) will simply block
+			 * until something interesting happens.  */
 
-	close(fd_close);
+		} else if (WIFCONTINUED(status)) {
+			// The child process is running again.
 
-	if (waitpid(0, &status, WNOHANG) > 0)
-		ret = WEXITSTATUS(status);
+		} else if (WIFEXITED(status)) {
+			// The child process has ended. Make this process end too, with the same exit status.
+			close(fd_close);  // make the next read() fail with EOF
+			exit_status = WEXITSTATUS(status);
 
-	// The signal number is irrelevant.
-	// Prevent "unused parameter" warning:
-	(void)s;
+		} else if (WIFSIGNALED(status)) {
+			// The child process has been killed. Kill this process too, with the same signal.
+			close(fd_close);  // make the next read() fail with EOF
+			exit_signal = WTERMSIG(status);
+		}
+	}
+
+	(void)signo;  // suppress warning about unused parameter
+}
+
+void sigfwd (int signo) {
+	/* We received a SIGINT or some other tty signal which should kill everything.
+	 * This has interrupted our read() loop, but that's no problem.
+	 * Without this signal handler, clerr would be killed off too early,
+	 * possibly causing the child process' final stderr messages to be lost.
+	 * So we just forward the signal to the child process and ignore it ourself.  */
+
+	kill(pid_child, signo);
 }
 
 
