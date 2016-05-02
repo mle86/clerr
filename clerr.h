@@ -1,7 +1,7 @@
 #ifndef __CLERR_H
 #define __CLERR_H
 
-/*  Copyright (C) 2009  Maximilian L. Eul
+/*  Copyright (C) 2013  Maximilian L. Eul
     This file is part of clerr.
 
     clerr is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 */
 
 
-#define VERSION "1.0"
+#define VERSION "1.0.1"
 
 
 #include <sys/types.h>

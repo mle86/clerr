@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-O2 -I. -Wall
+CFLAGS=-O3 -I. -Wall
 BIN=clerr
 DEST=/usr/local/bin/clerr
 CHOWN=root:root

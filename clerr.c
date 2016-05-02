@@ -1,6 +1,6 @@
 #include "clerr.h"
 
-/*  Copyright (C) 2009  Maximilian L. Eul
+/*  Copyright (C) 2013  Maximilian L. Eul
     This file is part of clerr.
 
     clerr is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ int main (int argc, char** argv) {
 	fd_errors       = f[0 /*pipe out*/];
 
 	// Parse options
-	{	register char c;
+	{	register signed char c;
 		while( (c = getopt(argc, argv, "+hVc:1")) != -1 )
 		switch (c) {
 			case 'h': Help(); return 0;
@@ -155,7 +155,7 @@ void setColor (char* arg, short *color) {
 
 void Version () { printf(
 	PROGNAME" v"VERSION"\n"
-	"Written by Maximilian Eul <maximilian@eul.cc>, October 2008.\n"
+	"Written by Maximilian Eul <maximilian@eul.cc>, June 2013.\n"
 	"\n"
 ); }
 
