@@ -19,17 +19,10 @@
 */
 
 
-#define VERSION "1.0.1"
+#define VERSION "1.0.2"
 
 
 int main (int argc, char** argv);
-void sig (int s);
-
-void Version (void);
-void Help (void);
-
-extern int fd_close;
-extern int ret;
 
 
 #define ANSI_RED     31

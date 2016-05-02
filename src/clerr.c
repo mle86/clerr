@@ -34,6 +34,8 @@ static bool colorize_fd (int fd_read, short color, FILE* output);
 static void run_command (int fd_write_errors, char** arguments);
 static bool create_pipe (int *in, int *out);
 static bool parse_color (char* arg, short *color);
+static void Version (void);
+static void Help    (void);
 
 
 int main (int argc, char** argv) {
@@ -201,7 +203,7 @@ bool parse_color (char* arg, short *color) {
 
 void Version () { printf(
 	PROGNAME" v"VERSION"\n"
-	"Written by Maximilian Eul <maximilian@eul.cc>, June 2013.\n"
+	"Written by Maximilian Eul <maximilian@eul.cc>, May 2016.\n"
 	"\n"
 ); }
 
@@ -219,3 +221,4 @@ void Help () { printf(
 	"    "PROGNAME"  make -C ..\n"
 	"\n"
 ); }
+
