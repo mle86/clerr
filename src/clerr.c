@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -124,22 +125,29 @@ bool colorize_fd (int fd_read, short color, FILE* output) {
 	const int fd_output = fileno(output);
 	
 	char buf [4096];
-	ssize_t s;
 
-	while ((s = read(fd_read, &buf, sizeof(buf) - 1)) > 0) {
-		write(fd_output, a_color, sizeof(a_color) - 1);
-		write(fd_output, buf, s);
-		write(fd_output, a_reset, sizeof(a_reset) - 1);
+	while (true) {
+		errno = 0;
+		ssize_t s = read(fd_read, &buf, sizeof(buf) - 1);
+		if (s > 0) {
+			write(fd_output, a_color, sizeof(a_color) - 1);
+			write(fd_output, buf, s);
+			write(fd_output, a_reset, sizeof(a_reset) - 1);
 
-		fflush(output);
-	}
+			fflush(output);
 
-	if (s == 0) {
-		return true;
-	} else {
-		// read error
-		perror(PROGNAME": read()");
-		return false;
+		} else if (s == 0) {
+			// EOF
+			return true;
+
+		} else if (errno == EINTR) {
+			// retry
+			
+		} else {
+			// Some other error condition.
+			perror(PROGNAME": read()");
+			return false;
+		}
 	}
 }
 
