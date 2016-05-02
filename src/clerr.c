@@ -134,6 +134,10 @@ void sig (int s) {
 
 	if (waitpid(0, &status, WNOHANG) > 0)
 		ret = WEXITSTATUS(status);
+
+	// The signal number is irrelevant.
+	// Prevent "unused parameter" warning:
+	(void)s;
 }
 
 

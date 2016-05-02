@@ -1,5 +1,5 @@
+CFLAGS=-O3 -I. -Wall -Wextra -pedantic -std=c99 -D_XOPEN_SOURCE
 CC=gcc
-CFLAGS=-O3 -I. -Wall
 BIN=clerr
 DEST=/usr/local/bin/clerr
 CHOWN=root:root
