@@ -22,7 +22,6 @@ install:
 	chown $(CHOWN) $(MANDEST)/$(MAN)
 	chmod 0644 $(MANDEST)/$(MAN)
 
-complete: clean default install
-
 clean:
-	rm -f $(BIN) *.so *.o *.a *~ *.bak
+	rm -f $(BIN) *~
+
