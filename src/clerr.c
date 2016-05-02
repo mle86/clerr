@@ -134,7 +134,7 @@ bool colorize_fd (int fd_read, short color, FILE* output) {
 
 	const int fd_output = fileno(output);
 	
-	char buf [4096];
+	char buf [BUFFERSIZE];
 
 	while (true) {
 		errno = 0;

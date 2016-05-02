@@ -25,6 +25,8 @@
 int main (int argc, char** argv);
 
 
+#define BUFFERSIZE 4096
+
 #define ANSI_RED     31
 #define ANSI_GREEN   32
 #define ANSI_YELLOW  33
