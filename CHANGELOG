@@ -1,0 +1,11 @@
+v1.0.2 (May 2016)
+	- fixed signal handling
+	- cleanup
+
+v1.0.1 (June 2013)
+	- fixed var signedness, caused problems on ARM
+
+v1.0 (January 2009)
+
+v0.9 (October 2008)
+
