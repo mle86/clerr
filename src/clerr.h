@@ -22,16 +22,6 @@
 #define VERSION "1.0.1"
 
 
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <signal.h>
-
-
 int main (int argc, char** argv);
 void sig (int s);
 
