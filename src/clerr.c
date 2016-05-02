@@ -9,7 +9,7 @@
 #include <signal.h>
 #include "clerr.h"
 
-/*  Copyright (C) 2013  Maximilian L. Eul
+/*  Copyright (C) 2016  Maximilian L. Eul
     This file is part of clerr.
 
     clerr is free software: you can redistribute it and/or modify
@@ -30,40 +30,33 @@
 int fd_close;
 int ret = 0;
 
+static bool colorize_fd (int fd_read, short color, FILE* output);
+static void run_command (int fd_write_errors, char** arguments);
+static bool create_pipe (int *in, int *out);
+static bool parse_color (char* arg, short *color);
+
 
 int main (int argc, char** argv) {
-	char buf [4096];
-	ssize_t s = 0;
-	
-	int cnt;
-
-	bool SameOutput = false;
+	bool combined_output = false;
 	short color = DEFAULT_COLOR;
 
-	int f[2], fd_child_errors, fd_errors, fd_olderr;
-
-
-	// Create pipe for error messages from child
-	if (pipe(f)) {
-		perror(PROGNAME": pipe()");
-		return 1;
-	}
-	fd_child_errors = f[1 /*pipe in*/];
-	fd_errors       = f[0 /*pipe out*/];
-
 	// Parse options
-	{	register signed char c;
-		while( (c = getopt(argc, argv, "+hVc:1")) != -1 )
+	{	signed char c;
+		while ((c = getopt(argc, argv, "+hVc:1")) != -1)
 		switch (c) {
 			case 'h': Help(); return 0;
 			case 'V': Version(); return 0;
-			case '1': SameOutput = true; break;
-			case 'c': setColor(optarg, &color); break;
+			case '1': combined_output = true; break;
+			case 'c':
+				  if (! parse_color(optarg, &color)) {
+					  fprintf(stderr, PROGNAME": unknown color\n");
+					  return 0;
+				  }
+				  break;
 		}
 	}
 
-	cnt = argc - optind;
-	if (cnt < 1) {
+	if ((argc - optind) < 1) {
 		fprintf(stderr, PROGNAME": no command given\n");
 		return 2;
 	}
@@ -71,63 +64,34 @@ int main (int argc, char** argv) {
 	if (color < 0 || color > 99) 
 		return 9;
 
+	int fd_write_errors, fd_read_errors;
+	if (! create_pipe(&fd_write_errors, &fd_read_errors))
+		return 1;
+
 	// Install signal handler
-	fd_close = fd_child_errors;
+	fd_close = fd_write_errors;
 	signal(SIGCHLD, sig);
 
-	{
-		// Prepare output format string
-		char fmt [] = "[1;YYm";
-		snprintf(fmt, sizeof(fmt), "[1;%02him", color);
+	switch (fork()) {
+		case -1:;
+			// fork() failed
+			perror(PROGNAME": fork()");
+			return 3;
 
-		// Prepare output stream
-		FILE* const out = SameOutput ? stdout : stderr;
-		const int outfd = fileno(out);
+		case 0:;
+			// child process
+			run_command(fd_write_errors, argv + optind);
+			// run_command() is an execvp() wrapper, it returns if the exec call failed
+			return 1;
 
-		switch(fork()) {
+		default:;
+			// parent process -- read and print error messages from child:
+			FILE* output = (combined_output) ? stdout : stderr;
+			bool ret = colorize_fd(fd_read_errors, color, output);
 
-			case -1:
-				perror(PROGNAME": fork()");
-				return 3;
-
-			case 0:
-				fd_olderr = dup(fileno(stderr));
-				dup2(fd_child_errors, fileno(stderr));
-
-				//      fd_olderr --> real stderr (console)
-				// child's stdout --> real stdout (console)
-				// child's stdin  <-- real stdin  (console)
-				// child's stderr --> fd_child_errors ==> fd_errors
-
-				// Signal handler not needed in this thread
-				signal(SIGCHLD, SIG_DFL);
-
-				// Execute program
-				execvp(argv[optind], argv+optind);
-
-				// Couldn't execute? Complain on normal stderr
-				dup2(fd_olderr, fileno(stderr));
-				perror(PROGNAME": execvp()");
-				return 1;
-
-			default:
-				// Read and print error messages from child
-				while( (s = read(fd_errors, &buf, sizeof(buf)-1)) > 0 ) {
-
-					write(outfd, fmt, sizeof(fmt)-1);
-					write(outfd, buf, s);
-					write(outfd, "[0m", 4);
-
-					fflush(out);
-				}
-
-				if (s) {
-					// read error
-					perror(PROGNAME": read()");
-					return 4;
-				}
-				break;
-		}
+			if (! ret)
+				return 4;
+			break;
 	}
 
 	// EOF
@@ -135,6 +99,70 @@ int main (int argc, char** argv) {
 	return ret;
 }
 
+
+bool create_pipe (int *in, int *out) {
+	int p [2];
+	if (pipe(p) != 0) {
+		perror(PROGNAME": pipe()");
+		return false;
+	}
+
+	*in  = p[1];
+	*out = p[0];
+
+	return true;
+}
+
+bool colorize_fd (int fd_read, short color, FILE* output) {
+	// prepare color sequences:
+	const char a_reset [] = "[0m";
+	char       a_color [] = "[1;YYm";
+	snprintf(a_color, sizeof(a_color), "[1;%02him", color);
+
+	const int fd_output = fileno(output);
+	
+	char buf [4096];
+	ssize_t s;
+
+	while ((s = read(fd_read, &buf, sizeof(buf) - 1)) > 0) {
+		write(fd_output, a_color, sizeof(a_color) - 1);
+		write(fd_output, buf, s);
+		write(fd_output, a_reset, sizeof(a_reset) - 1);
+
+		fflush(output);
+	}
+
+	if (s == 0) {
+		return true;
+	} else {
+		// read error
+		perror(PROGNAME": read()");
+		return false;
+	}
+}
+
+void run_command (int fd_write_errors, char** arguments) {
+	// save original stderr:
+	const int fd_olderr = dup(fileno(stderr));
+
+	// redirect stderr to fd_write_errors:
+	dup2(fd_write_errors, fileno(stderr));
+
+	/*      fd_olderr → real stderr
+	 * child's stdout → real stdout
+	 * child's stdin  ← real stdin
+	 * child's stderr → fd_write_errors ⇒ fd_read_errors  */
+
+	// restore default signal handlers:
+	signal(SIGCHLD, SIG_DFL);
+
+	// execute command:
+	execvp(arguments[0], arguments);
+
+	// couldn't execute? complain on original stderr:
+	dup2(fd_olderr, fileno(stderr));
+	perror(PROGNAME": execvp()");
+}
 
 void sig (int s) {
 	int status;
@@ -150,7 +178,7 @@ void sig (int s) {
 }
 
 
-void setColor (char* arg, short *color) {
+bool parse_color (char* arg, short *color) {
 	if (!strcmp(arg, "gr") || !strcmp(arg, "gn") || !strcmp(arg, "green"))
 		*color = ANSI_GREEN;
 	else if (!strcmp(arg, "re") || !strcmp(arg, "rd") || !strcmp(arg, "red"))
@@ -163,6 +191,11 @@ void setColor (char* arg, short *color) {
 		*color = ANSI_CYAN;
 	else if (!strcmp(arg, "wh") || !strcmp(arg, "white"))
 		*color = ANSI_WHITE;
+	else {
+		// unknown color
+		return false;
+	}
+	return true;
 }
 
 

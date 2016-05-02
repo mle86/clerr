@@ -25,8 +25,6 @@
 int main (int argc, char** argv);
 void sig (int s);
 
-void setColor (char* arg, short *color);
-
 void Version (void);
 void Help (void);
 
