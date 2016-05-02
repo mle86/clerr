@@ -13,6 +13,9 @@ default: $(BIN)
 $(BIN): $(SRC)
 	$(CC) $(CFLAGS) -o $@ -DPROGNAME='"$(BIN)"' $^
 
+README.md: man/*
+	perl man/to-readme.pl <man/clerr.1 >README.md
+
 install:
 	strip $(BIN)
 	cp $(BIN) $(DEST)
@@ -24,5 +27,5 @@ install:
 	chmod 0644 $(MANDEST)/$(MAN)
 
 clean:
-	rm -f $(BIN) *~
+	rm -f $(BIN) *~ README.md
 
