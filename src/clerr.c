@@ -286,7 +286,7 @@ void Version () { printf(
 
 void Help () { printf(
 	M1 PROGNAME M0" executes another program and colorizes all error output.\n"
-	"Usage: "M1 PROGNAME M0" ["M1"OPTIONS"M0"] "M1"COMMAND"M0" ["M1"ARGUMENTS"M0"]\n"
+	"Usage: "M1 PROGNAME M0" ["M1"OPTIONS"M0"] "M1"COMMAND"M0" ["M1"ARGUMENTS"M0"...]\n"
 	"Options:\n"
 	"    "M1"-c COLOR"M0"  Select error color, choose from\n"
 	"    "  "        "  "  white, red, green, blue, yellow, cyan.\n"

@@ -1,4 +1,4 @@
-.TH CLERR "1" "June 2013" "clerr 1.0.1" ""
+.TH CLERR "1" "May 2016" "clerr 1.0.2" ""
 
 .SH NAME
 clerr \- colorize error output
@@ -7,11 +7,9 @@ clerr \- colorize error output
 [\fB-1hV\fR]
 [\fB-c\fR \fICOLOR\fR]
 \fICOMMAND\fR
-[\fIARGUMENTS\fR]
+[\fIARGUMENTS\fR...]
 .SH DESCRIPTION
 \fBclerr\fR is a command line tool which executes another \fICOMMAND\fR and colorizes all error output (on stderr) of that program while its normal output (on stdout) will be printed in the default colors.
-
-The command to be executed may be followed by any number of arguments which will be passed to the command just as if calling it without \fBclerr\fR -- therefore the \fBclerr\fR call may be regarded as an execution modifying prefix.
 .SH OPTIONS
 .TP
 .B \-1
@@ -35,11 +33,14 @@ Default is \fIred\fR. Valid colors and their abbrevations (also valid) are:
 \fBclerr\fR will print its program version and exit.
 .SH EXAMPLES
 .TP
-clerr cat /etc/group-
+.B clerr cat /etc/group-
 This will display the file \fI/etc/group-\fR in standard colors.
 If the file does not exist or the caller is not permitted to read this file, the corresponding error message (something like "cat: /etc/group-: No such file or directory") will be printed in red.
 .TP
-clerr make
+.B clerr make
 Run \fBmake\fR in the current directory. Any compiling errors will be printed in red.
+.SH LICENSE
+GNU GPL v3
+<http://gnu.org/licenses/gpl.html>
 .SH AUTHOR
 Maximilian Eul <maximilian@eul.cc>
