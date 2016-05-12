@@ -2,7 +2,7 @@
 
 # clerr(1) - colorize error output
 
-Version 1.0.2, May 2016
+Version 1.0.3, May 2016
 
 ```clerr [-1hV] [-c COLOR] COMMAND [ARGUMENTS...]```
 
