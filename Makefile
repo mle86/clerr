@@ -6,7 +6,7 @@ DEST=/usr/local/bin/clerr
 CHOWN=root:root
 SRC=src/clerr.c
 
-MAN=man/clerr.1
+MAN=clerr.1
 MANDEST=/usr/local/share/man/man1/
 
 
@@ -27,9 +27,10 @@ install:
 	chown $(CHOWN) $(DEST)
 	
 	mkdir -p $(MANDEST)
-	cp $(MAN) $(MANDEST)
+	cp man/$(MAN) $(MANDEST)
 	chown $(CHOWN) $(MANDEST)/$(MAN)
 	chmod 0644 $(MANDEST)/$(MAN)
+	gzip -f $(MANDEST)/$(MAN)
 
 clean:
 	rm -f $(BIN) *~ README.md
