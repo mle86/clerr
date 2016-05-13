@@ -37,7 +37,7 @@ volatile int exit_signal = 0;
 static bool colorize_fd (int fd_read, short color, FILE* output);
 static void run_command (int fd_write_errors, char** arguments);
 static bool create_pipe (int *in, int *out);
-static bool parse_color (char* arg, short *color);
+static bool parse_color (const char* arg, short *color);
 static void sigchld     (int signo);
 static void sigfwd      (int signo);
 static void install_signal_handlers (void);
@@ -256,7 +256,7 @@ void sigfwd (int signo) {
 }
 
 
-bool parse_color (char* arg, short *color) {
+bool parse_color (const char* arg, short *color) {
 	if (!strcmp(arg, "gr") || !strcmp(arg, "gn") || !strcmp(arg, "green"))
 		*color = ANSI_GREEN;
 	else if (!strcmp(arg, "re") || !strcmp(arg, "rd") || !strcmp(arg, "red"))
@@ -273,6 +273,7 @@ bool parse_color (char* arg, short *color) {
 		// unknown color
 		return false;
 	}
+
 	return true;
 }
 
