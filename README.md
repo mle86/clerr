@@ -26,8 +26,9 @@ The man page will be copied to /usr/local/share/man/man.1/**clerr.1.gz**.
 * **-1**
   All output will be printed on stdout only, even error output (which will still get colorized).
 * **-c COLOR**
-  Set the color for error output.
-  Default is *red*. Valid colors and their abbrevations (also valid) are:
+  Sets the color for error output.
+  Default is *red*.
+  Valid colors and their valid abbreviations are:
   
   *red*/*re*/*rd*,
   *green*/*gr*/*gn*,
@@ -36,15 +37,15 @@ The man page will be copied to /usr/local/share/man/man.1/**clerr.1.gz**.
   *cyan*/*cy*/*cn*,
   *white*/*wh*.
 * **-h**
-  **clerr** will print a short help summary and exit.
+  Prints a short help summary and exits.
 * **-V**
-  **clerr** will print its program version and exit.
+  Prints the program version and exits.
 
 # Exit status
 
 **clerr** will exit with the same status as *COMMAND*,
 if it was executed successfully.
-If *COMMAND* terminated due to a signal,
+If the command was terminated due to a signal,
 **clerr** will kill itself with the same signal.
 Otherwise, **clerr** will return one of these special exit status values:
 

@@ -12,7 +12,7 @@ assertCmdEq "$CLERR ./helpers/args.sh yyy" "<yyy>"
 # What about commands without a path?
 assertCmdEq "$CLERR pwd" "$(pwd)"
 # What about weird command arguments?
-# (NB clerr invokes its command argument through execlp, so special characters need to be shell-escaped.)
+# (NB clerr invokes its command argument through execvp, so special characters need to be shell-escaped.)
 assertCmdEq "$CLERR $HELPER/args.sh  aa \"'\" bb '\"' '<' cc" "<aa><'><bb><\"><<><cc>"
 
 # All commands so far have been expected to work.

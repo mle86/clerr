@@ -16,8 +16,9 @@ clerr \- colorize error output
 All output will be printed on stdout only, even error output (which will still get colorized).
 .TP
 .B \-c \fICOLOR
-Set the color for error output.
-Default is \fIred\fR. Valid colors and their abbrevations (also valid) are:
+Sets the color for error output.
+Default is \fIred\fR.
+Valid colors and their valid abbreviations are:
 
 .IR red / re / rd ,
 .IR green / gr / gn ,
@@ -27,14 +28,14 @@ Default is \fIred\fR. Valid colors and their abbrevations (also valid) are:
 .IR white / wh .
 .TP
 .B \-h
-\fBclerr\fR will print a short help summary and exit.
+Prints a short help summary and exits.
 .TP
 .B \-V
-\fBclerr\fR will print its program version and exit.
+Prints the program version and exits.
 .SH EXIT STATUS
 \fBclerr\fR will exit with the same status as \fICOMMAND\fR,
 if it was executed successfully.
-If \fICOMMAND\fR terminated due to a signal,
+If the command was terminated due to a signal,
 \fBclerr\fR will kill itself with the same signal.
 Otherwise, \fBclerr\fR will return one of these special exit status values:
 .TP
