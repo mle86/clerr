@@ -27,6 +27,12 @@ int main (int argc, char** argv);
 
 #define BUFFERSIZE 4096
 
+#define EXIT_SYNTAXERR		1
+#define EXIT_HELP		0
+#define EXIT_INTERNALERR	125
+#define EXIT_READERR		EXIT_INTERNALERR
+#define EXIT_EXECERR		124
+
 #define ANSI_RED     31
 #define ANSI_GREEN   32
 #define ANSI_YELLOW  33

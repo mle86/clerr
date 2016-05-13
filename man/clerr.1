@@ -31,6 +31,23 @@ Default is \fIred\fR. Valid colors and their abbrevations (also valid) are:
 .TP
 .B \-V
 \fBclerr\fR will print its program version and exit.
+.SH EXIT STATUS
+\fBclerr\fR will exit with the same status as \fICOMMAND\fR,
+if it was executed successfully.
+If \fICOMMAND\fR terminated due to a signal,
+\fBclerr\fR will kill itself with the same signal.
+Otherwise, \fBclerr\fR will return one of these special exit status values:
+.TP
+.B 1
+invocation error
+(e.g. syntax error or unknown option)
+.TP
+.B 124
+\fICOMMAND\fR could not be executed
+.TP
+.B 125
+internal error
+(e.g. could not fork)
 .SH EXAMPLES
 .TP
 .B clerr cat /etc/group-

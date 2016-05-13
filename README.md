@@ -40,6 +40,23 @@ The man page will be copied to /usr/local/share/man/man.1/**clerr.1.gz**.
 * **-V**
   **clerr** will print its program version and exit.
 
+# Exit status
+
+**clerr** will exit with the same status as *COMMAND*,
+if it was executed successfully.
+If *COMMAND* terminated due to a signal,
+**clerr** will kill itself with the same signal.
+Otherwise, **clerr** will return one of these special exit status values:
+
+* **1**
+  invocation error
+  (e.g. syntax error or unknown option)
+* **124**
+  *COMMAND* could not be executed
+* **125**
+  internal error
+  (e.g. could not fork)
+
 # Examples
 
 

@@ -54,13 +54,13 @@ int main (int argc, char** argv) {
 	{	signed char c;
 		while ((c = getopt(argc, argv, "+hVc:1")) != -1)
 		switch (c) {
-			case 'h': Help(); return 0;
-			case 'V': Version(); return 0;
+			case 'h': Help(); return EXIT_HELP;
+			case 'V': Version(); return EXIT_HELP;
 			case '1': combined_output = true; break;
 			case 'c':
 				  if (! parse_color(optarg, &color)) {
 					  fprintf(stderr, PROGNAME": unknown color\n");
-					  return 0;
+					  return EXIT_SYNTAXERR;
 				  }
 				  break;
 		}
@@ -68,15 +68,15 @@ int main (int argc, char** argv) {
 
 	if ((argc - optind) < 1) {
 		fprintf(stderr, PROGNAME": no command given\n");
-		return 2;
+		return EXIT_SYNTAXERR;
 	}
 
 	if (color < 0 || color > 99) 
-		return 9;
+		return EXIT_SYNTAXERR;
 
 	int fd_write_errors, fd_read_errors;
 	if (! create_pipe(&fd_write_errors, &fd_read_errors))
-		return 1;
+		return EXIT_INTERNALERR;
 
 	// Install signal handler
 	fd_close = fd_write_errors;
@@ -87,13 +87,13 @@ int main (int argc, char** argv) {
 		case -1:;
 			// fork() failed
 			perror(PROGNAME": fork()");
-			return 3;
+			return EXIT_INTERNALERR;
 
 		case 0:;
 			// child process
 			run_command(fd_write_errors, argv + optind);
 			// run_command() is an execvp() wrapper, it returns if the exec call failed
-			return 1;
+			return EXIT_EXECERR;
 
 		default:;
 			// parent process -- read and print error messages from child:
@@ -101,7 +101,7 @@ int main (int argc, char** argv) {
 			bool ret = colorize_fd(fd_read_errors, color, output);
 
 			if (! ret)
-				return 4;
+				return EXIT_READERR;
 			else if (exit_signal) {
 				// kill self with same signal.
 				default_signal_handlers();  // restore default signal handlers, or SIGINT won't work

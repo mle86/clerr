@@ -23,9 +23,9 @@ assertCmd "$CLERR $HELPER/exit.sh 2"  2
 assertCmd "$CLERR $HELPER/selfkill.sh TERM" $((128 + 15))
 assertCmd "$CLERR $HELPER/selfkill.sh KILL" $((128 + 9))
 # Or missing commands?
-assertCmd "$CLERR $HELPER/DOES-NOT-EXIST.sh" 1
+assertCmd "$CLERR $HELPER/DOES-NOT-EXIST.sh" 124
 # Or existing, but non-executable commands?
-assertCmd "$CLERR $HELPER/noexec.sh" 1
+assertCmd "$CLERR $HELPER/noexec.sh" 124
 
 success
 
