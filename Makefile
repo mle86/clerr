@@ -16,7 +16,7 @@ $(BIN): $(SRC)
 	$(CC) $(CFLAGS) -o $@ -DPROGNAME='"$(BIN)"' $^
 
 README.md: man/*
-	perl man/to-readme.pl <man/clerr.1 >README.md
+	perl man/man-to-md.pl --comment --formatted-code --paste-after DESCRIPTION:'Installation.md' <man/clerr.1 >README.md
 
 test:
 	git submodule update --init test/framework
