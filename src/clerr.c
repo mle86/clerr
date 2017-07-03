@@ -280,7 +280,7 @@ bool parse_color (const char* arg, short *color) {
 
 void Version () { printf(
 	PROGNAME" v"VERSION"\n"
-	"Written by Maximilian Eul <maximilian@eul.cc>, May 2016.\n"
+	"Written by Maximilian Eul <maximilian@eul.cc>, " VERDATE ".\n"
 	"\n"
 ); }
 

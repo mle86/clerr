@@ -20,6 +20,7 @@
 
 
 #define VERSION "1.0.4"
+#define VERDATE "May 2016"
 
 
 int main (int argc, char** argv);
