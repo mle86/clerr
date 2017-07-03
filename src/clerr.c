@@ -10,7 +10,7 @@
 #include <signal.h>
 #include "clerr.h"
 
-/*  Copyright (C) 2016  Maximilian L. Eul
+/*  Copyright (C) 2016, 2017  Maximilian L. Eul
     This file is part of clerr.
 
     clerr is free software: you can redistribute it and/or modify

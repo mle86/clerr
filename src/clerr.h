@@ -1,7 +1,7 @@
 #ifndef __CLERR_H
 #define __CLERR_H
 
-/*  Copyright (C) 2016  Maximilian L. Eul
+/*  Copyright (C) 2016, 2017  Maximilian L. Eul
     This file is part of clerr.
 
     clerr is free software: you can redistribute it and/or modify
@@ -19,8 +19,8 @@
 */
 
 
-#define VERSION "1.0.4"
-#define VERDATE "May 2016"
+#define VERSION "1.0.5"
+#define VERDATE "July 2017"
 
 
 int main (int argc, char** argv);
