@@ -4,7 +4,7 @@
 
 Version 1.0.4, May 2016
 
-```clerr [-1hV] [-c COLOR] COMMAND [ARGUMENTS...]```
+<pre><code><b>clerr</b> [<b>-1hV</b>] [<b>-c</b> <i>COLOR</i>] <i>COMMAND</i> [<i>ARGUMENTS</i>...]</code></pre>
 
 # Description
 
@@ -23,9 +23,9 @@ The man page will be copied to /usr/local/share/man/man.1/**clerr.1.gz**.
 # Options
 
 
-* **-1**
+* **-1**  
   All output will be printed on stdout only, even error output (which will still get colorized).
-* **-c COLOR**
+* **-c COLOR**  
   Sets the color for error output.
   Default is *red*.
   Valid colors and their valid abbreviations are:
@@ -36,12 +36,12 @@ The man page will be copied to /usr/local/share/man/man.1/**clerr.1.gz**.
   *yellow*/*ye*/*yw*,
   *cyan*/*cy*/*cn*,
   *white*/*wh*.
-* **-h**
+* **-h**  
   Prints a short help summary and exits.
-* **-V**
+* **-V**  
   Prints the program version and exits.
 
-# Exit status
+# Exit Status
 
 **clerr** will exit with the same status as *COMMAND*,
 if it was executed successfully.
@@ -49,22 +49,22 @@ If the command was terminated due to a signal,
 **clerr** will kill itself with the same signal.
 Otherwise, **clerr** will return one of these special exit status values:
 
-* **1**
+* **1**  
   invocation error
   (e.g. syntax error or unknown option)
-* **124**
+* **124**  
   *COMMAND* could not be executed
-* **125**
+* **125**  
   internal error
   (e.g. could not fork)
 
 # Examples
 
 
-* **clerr cat /etc/group-**
+* **clerr cat /etc/group-**  
   This will display the file */etc/group-* in standard colors.
   If the file does not exist or the caller is not permitted to read this file, the corresponding error message (something like "cat: /etc/group-: No such file or directory") will be printed in red.
-* **clerr make**
+* **clerr make**  
   Run **make** in the current directory. Any compiling errors will be printed in red.
 
 # License
@@ -73,4 +73,4 @@ Otherwise, **clerr** will return one of these special exit status values:
 
 # Author
 
-Maximilian Eul <[maximilian@eul.cc](mailto:maximilian@eul.cc)>
+Maximilian Eul &lt;[maximilian@eul.cc](mailto:maximilian@eul.cc)>
